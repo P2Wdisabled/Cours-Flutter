@@ -181,9 +181,9 @@ class _QuizPageState extends State<QuizPage> {
       question:
           'Quel widget est utilisé pour superposer des widgets les uns sur les autres ?',
       answers: [
-        Answer(text: 'Stack', isCorrect: true),
         Answer(text: 'Layer', isCorrect: false),
         Answer(text: 'Overlay', isCorrect: false),
+        Answer(text: 'Stack', isCorrect: true),
       ],
     ),
   ];
@@ -220,6 +220,14 @@ class _QuizPageState extends State<QuizPage> {
       selectedAnswer = null;
       currentQuestion++;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    for (var question in questions) {
+      question.answers.shuffle();
+    }
   }
 
   @override
