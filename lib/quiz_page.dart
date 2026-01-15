@@ -53,7 +53,16 @@ class _QuizPageState extends State<QuizPage> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(isCorrect ? 'Bonne réponse !' : 'Mauvaise réponse...'),
+        content: Row(
+          children: [
+            Icon(isCorrect ? Icons.check : Icons.close, color: Colors.white),
+            const SizedBox(width: 10),
+            Text(isCorrect ? 'Bonne réponse !' : 'Mauvaise réponse...'),
+          ],
+        ),
+        duration: const Duration(
+          seconds: 1,
+        ), // 4x shorter than default (4s), user asked for 2x shorter but 2s feels still long, making it snappier.
       ),
     );
   }
@@ -62,26 +71,44 @@ class _QuizPageState extends State<QuizPage> {
   Widget build(BuildContext context) {
     if (currentQuestion >= questions.length) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Résultat')),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Score final : $score / ${questions.length}',
-                style: const TextStyle(fontSize: 24),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    currentQuestion = 0;
-                    score = 0;
-                  });
-                },
-                child: const Text('Rejouer'),
-              ),
-            ],
+        appBar: AppBar(
+          title: const Text('Résultat'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        extendBodyBehindAppBar: true,
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blueAccent, Colors.purpleAccent],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Score final : $score / ${questions.length}',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      currentQuestion = 0;
+                      score = 0;
+                    });
+                  },
+                  child: const Text('Rejouer'),
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -90,34 +117,63 @@ class _QuizPageState extends State<QuizPage> {
     final question = questions[currentQuestion];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Quiz Flutter')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Question ${currentQuestion + 1} sur ${questions.length}',
-              style: const TextStyle(fontSize: 18, color: Colors.grey),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              question.question, // Pas de cast ! Typage direct
-              style: const TextStyle(fontSize: 20),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            ...question.answers.map((answer) {
-              return Container(
-                width: double.infinity,
-                margin: const EdgeInsets.symmetric(vertical: 6),
-                child: ElevatedButton(
-                  onPressed: () => answerQuestion(answer.isCorrect),
-                  child: Text(answer.text), // Pas de cast !
+      appBar: AppBar(
+        title: const Text('Quiz Flutter'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      extendBodyBehindAppBar: true,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blueAccent, Colors.purpleAccent],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Question ${currentQuestion + 1} sur ${questions.length}',
+                style: const TextStyle(fontSize: 18, color: Colors.white70),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                question.question, // Pas de cast ! Typage direct
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
-              );
-            }),
-          ],
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              ...question.answers.map((answer) {
+                return Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: ElevatedButton.icon(
+                    onPressed: () => answerQuestion(answer.isCorrect),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.deepPurple,
+                    ),
+                    icon: const Icon(
+                      Icons.arrow_forward,
+                    ), // Generic icon so we don't cheat
+                    label: Text(
+                      answer.text,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ),
         ),
       ),
     );
