@@ -202,6 +202,9 @@ class _QuizPageState extends State<QuizPage> {
     if (isCorrect) {
       score++;
     }
+    for (var question in questions) {
+      question.answers.shuffle();
+    }
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
