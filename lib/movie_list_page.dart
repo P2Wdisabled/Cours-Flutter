@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'service/movie_service.dart';
 
 class MovieListPage extends StatefulWidget {
@@ -310,11 +311,24 @@ class MovieDetailPage extends StatefulWidget {
 
 class _MovieDetailPageState extends State<MovieDetailPage> {
   late bool isFavorite;
+  late YoutubePlayerController _controller;
 
   @override
   void initState() {
     super.initState();
     isFavorite = widget.initialIsFavorite;
+
+    final videoId = YoutubePlayer.convertUrlToId(widget.movie.trailerUrl);
+    _controller = YoutubePlayerController(
+      initialVideoId: videoId ?? '',
+      flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   void _toggleFavorite() {
@@ -341,17 +355,17 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(
-              widget.movie.poster,
-              width: double.infinity,
-              height: 400,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                width: double.infinity,
-                height: 400,
-                color: Colors.grey[300],
-                child: const Center(child: Icon(Icons.broken_image, size: 100)),
+            YoutubePlayer(
+              controller: _controller,
+              showVideoProgressIndicator: true,
+              progressIndicatorColor: Colors.amber,
+              progressColors: const ProgressBarColors(
+                playedColor: Colors.amber,
+                handleColor: Colors.amberAccent,
               ),
+              onReady: () {
+                // _controller.addListener(listener);
+              },
             ),
             Padding(
               padding: const EdgeInsets.all(16),

@@ -6,12 +6,14 @@ class Movie {
   final int year;
   final String poster;
   final String description;
+  final String trailerUrl;
 
   Movie({
     required this.title,
     required this.year,
     required this.poster,
     required this.description,
+    required this.trailerUrl,
   });
 
   factory Movie.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class Movie {
       year: json['year'] as int,
       poster: json['poster'] as String,
       description: json['description'] as String,
+      trailerUrl: json['trailer_url'] as String,
     );
   }
 }

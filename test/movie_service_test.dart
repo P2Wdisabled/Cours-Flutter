@@ -9,6 +9,7 @@ void main() {
         "year": 2010,
         "poster": "https://example.com/poster.jpg",
         "description": "Dream within a dream",
+        "trailer_url": "https://youtube.com/watch?v=123456",
       };
 
       final movie = Movie.fromJson(json);
@@ -17,6 +18,7 @@ void main() {
       expect(movie.year, 2010);
       expect(movie.poster, "https://example.com/poster.jpg");
       expect(movie.description, "Dream within a dream");
+      expect(movie.trailerUrl, "https://youtube.com/watch?v=123456");
     });
   });
 
