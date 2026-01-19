@@ -2,9 +2,9 @@ name: Flutter Build (Android & iOS)
 
 on:
   push:
-    branches: [ main ]
+    branches: [ dev ]
   pull_request:
-    branches: [ main ]
+    branches: [ dev ]
 
 jobs:
   build-android:
