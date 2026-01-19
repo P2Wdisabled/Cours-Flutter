@@ -13,11 +13,25 @@ class MovieListPage extends StatefulWidget {
 class _MovieListPageState extends State<MovieListPage> {
   List<Movie> movies = [];
   final Set<String> favorites = {};
+  bool isGridMode = false;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
     _loadMovies();
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadMovies() async {
@@ -39,8 +53,23 @@ class _MovieListPageState extends State<MovieListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🎬 Liste de films'),
+        title: !isGridMode
+            ? const Text('🎬 Liste de films')
+            : TextField(
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  hintText: 'Rechercher un film...',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(color: Colors.white70),
+                ),
+                style: const TextStyle(color: Colors.white),
+                cursorColor: Colors.white,
+              ),
         actions: [
+          IconButton(
+            icon: Icon(isGridMode ? Icons.list : Icons.grid_view),
+            onPressed: () => setState(() => isGridMode = !isGridMode),
+          ),
           IconButton(
             icon: const Icon(Icons.favorite),
             onPressed: () => Navigator.push(
@@ -58,15 +87,44 @@ class _MovieListPageState extends State<MovieListPage> {
       ),
       body: movies.isEmpty
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: movies.length,
-              itemBuilder: (context, index) => MovieCard(
-                movie: movies[index],
-                isFavorite: favorites.contains(movies[index].title),
-                onFavoriteTap: () => toggleFavorite(movies[index].title),
-              ),
-            ),
+          : _buildMovieContent(),
     );
+  }
+
+  Widget _buildMovieContent() {
+    final filteredMovies = movies
+        .where(
+          (movie) =>
+              movie.title.toLowerCase().contains(_searchQuery.toLowerCase()),
+        )
+        .toList();
+
+    if (filteredMovies.isEmpty) {
+      return const Center(child: Text('Aucun film trouvé'));
+    }
+
+    return isGridMode
+        ? GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.7,
+            ),
+            itemCount: filteredMovies.length,
+            itemBuilder: (context, index) => MovieCard(
+              movie: filteredMovies[index],
+              isFavorite: favorites.contains(filteredMovies[index].title),
+              onFavoriteTap: () => toggleFavorite(filteredMovies[index].title),
+              isGrid: true,
+            ),
+          )
+        : ListView.builder(
+            itemCount: filteredMovies.length,
+            itemBuilder: (context, index) => MovieCard(
+              movie: filteredMovies[index],
+              isFavorite: favorites.contains(filteredMovies[index].title),
+              onFavoriteTap: () => toggleFavorite(filteredMovies[index].title),
+            ),
+          );
   }
 }
 
@@ -118,6 +176,7 @@ class MovieCard extends StatelessWidget {
   final bool isFavorite;
   final VoidCallback onFavoriteTap;
   final IconData? favoriteIcon;
+  final bool isGrid;
 
   const MovieCard({
     super.key,
@@ -125,6 +184,7 @@ class MovieCard extends StatelessWidget {
     required this.isFavorite,
     required this.onFavoriteTap,
     this.favoriteIcon,
+    this.isGrid = false,
   });
 
   @override
@@ -142,33 +202,91 @@ class MovieCard extends StatelessWidget {
             ),
           ),
         ),
-        child: ListTile(
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: Image.network(
-              movie.poster,
-              width: 50,
-              height: 75,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                width: 50,
-                height: 75,
-                color: Colors.grey[300],
-                child: const Icon(Icons.movie),
+        child: isGrid
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(4),
+                      ),
+                      child: Image.network(
+                        movie.poster,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: Colors.grey[300],
+                          child: const Icon(Icons.movie, size: 50),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          movie.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('${movie.year}'),
+                            IconButton(
+                              icon: Icon(
+                                favoriteIcon ??
+                                    (isFavorite
+                                        ? Icons.favorite
+                                        : Icons.favorite_border),
+                                size: 20,
+                                color: isFavorite && favoriteIcon == null
+                                    ? Colors.red
+                                    : null,
+                              ),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              onPressed: onFavoriteTap,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            : ListTile(
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: Image.network(
+                    movie.poster,
+                    width: 50,
+                    height: 75,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      width: 50,
+                      height: 75,
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.movie),
+                    ),
+                  ),
+                ),
+                title: Text(movie.title),
+                subtitle: Text('${movie.year}'),
+                trailing: IconButton(
+                  icon: Icon(
+                    favoriteIcon ??
+                        (isFavorite ? Icons.favorite : Icons.favorite_border),
+                    color: isFavorite && favoriteIcon == null
+                        ? Colors.red
+                        : null,
+                  ),
+                  onPressed: onFavoriteTap,
+                ),
               ),
-            ),
-          ),
-          title: Text(movie.title),
-          subtitle: Text('${movie.year}'),
-          trailing: IconButton(
-            icon: Icon(
-              favoriteIcon ??
-                  (isFavorite ? Icons.favorite : Icons.favorite_border),
-              color: isFavorite && favoriteIcon == null ? Colors.red : null,
-            ),
-            onPressed: onFavoriteTap,
-          ),
-        ),
       ),
     );
   }
