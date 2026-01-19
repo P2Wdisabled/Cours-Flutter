@@ -53,6 +53,15 @@ jobs:
           flutter-version: '3.38.7'
           cache: true
 
+      - name: Flutter clean
+        run: flutter clean
+
+      - name: Clean iOS Pods
+        run: |
+          cd ios
+          rm -rf Pods Podfile.lock
+          pod repo update
+
       - name: Install dependencies
         run: flutter pub get
 
