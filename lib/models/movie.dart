@@ -61,3 +61,42 @@ class Movie {
 
   String get backdropUrl => backdrop ?? 'https://placehold.co/600x400';
 }
+
+class MovieSource {
+  final String name;
+  final String type; // sub, rent, buy, free
+  final String? webUrl;
+
+  MovieSource({required this.name, required this.type, this.webUrl});
+
+  factory MovieSource.fromJson(Map<String, dynamic> json) {
+    return MovieSource(
+      name: json['name'] ?? 'Inconnu',
+      type: json['type'] ?? 'unknown',
+      webUrl: json['web_url'],
+    );
+  }
+}
+
+class CastMember {
+  final String name;
+  final String? character;
+  final String? photoUrl;
+  final String type; // Actor, Director, etc.
+
+  CastMember({
+    required this.name,
+    this.character,
+    this.photoUrl,
+    required this.type,
+  });
+
+  factory CastMember.fromJson(Map<String, dynamic> json) {
+    return CastMember(
+      name: json['full_name'] ?? json['name'] ?? 'Inconnu',
+      character: json['role'],
+      photoUrl: json['headshot_url'] ?? json['image_url'],
+      type: json['type'] ?? 'unknown',
+    );
+  }
+}
