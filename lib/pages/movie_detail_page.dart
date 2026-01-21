@@ -19,29 +19,38 @@ class MovieDetailPage extends StatefulWidget {
 
 class _MovieDetailPageState extends State<MovieDetailPage> {
   Movie? movie;
+  List<MovieSource> sources = [];
+  List<CastMember> cast = [];
   bool isLoading = true;
   String? errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _loadMovieDetails();
+    _loadAllMovieDetails();
   }
 
-  Future<void> _loadMovieDetails() async {
+  Future<void> _loadAllMovieDetails() async {
     setState(() {
       isLoading = true;
       errorMessage = null;
     });
 
     try {
-      final loadedMovie = await widget.movieService.getMovieDetails(
-        widget.movieId,
-      );
-      setState(() {
-        movie = loadedMovie;
-        isLoading = false;
-      });
+      final results = await Future.wait([
+        widget.movieService.getMovieDetails(widget.movieId),
+        widget.movieService.getMovieSources(widget.movieId),
+        widget.movieService.getMovieCast(widget.movieId),
+      ]);
+
+      if (mounted) {
+        setState(() {
+          movie = results[0] as Movie;
+          sources = results[1] as List<MovieSource>;
+          cast = results[2] as List<CastMember>;
+          isLoading = false;
+        });
+      }
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -70,6 +79,13 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     }
   }
 
+  Future<void> _openSourceUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,7 +102,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                   Text(errorMessage!, textAlign: TextAlign.center),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: _loadMovieDetails,
+                    onPressed: _loadAllMovieDetails,
                     child: const Text('Réessayer'),
                   ),
                 ],
@@ -102,7 +118,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                     width: double.infinity,
                     height: 500,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                    errorBuilder: (_, _, _) => Container(
                       height: 500,
                       color: Colors.grey[300],
                       child: const Icon(Icons.movie, size: 100),
@@ -173,6 +189,98 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                           ),
                           const SizedBox(height: 20),
                         ],
+
+                        // Plateformes de streaming (Bonus)
+                        if (sources.isNotEmpty) ...[
+                          const Text(
+                            'Disponible sur',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            children: sources.map((source) {
+                              return ActionChip(
+                                avatar: const Icon(Icons.tv, size: 16),
+                                label: Text('${source.name} (${source.type})'),
+                                onPressed: source.webUrl != null
+                                    ? () => _openSourceUrl(source.webUrl!)
+                                    : null,
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+
+                        // Casting (Bonus)
+                        if (cast.isNotEmpty) ...[
+                          const Text(
+                            'Casting',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            height: 120,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: cast.length,
+                              separatorBuilder: (_, _) =>
+                                  const SizedBox(width: 16),
+                              itemBuilder: (context, index) {
+                                final member = cast[index];
+                                return Column(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 30,
+                                      backgroundImage: member.photoUrl != null
+                                          ? NetworkImage(member.photoUrl!)
+                                          : null,
+                                      child: member.photoUrl == null
+                                          ? Text(member.name[0])
+                                          : null,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    SizedBox(
+                                      width: 80,
+                                      child: Text(
+                                        member.name,
+                                        textAlign: TextAlign.center,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    if (member.character != null)
+                                      SizedBox(
+                                        width: 80,
+                                        child: Text(
+                                          member.character!,
+                                          textAlign: TextAlign.center,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+
                         // Synopsis
                         const Text(
                           'Synopsis',
