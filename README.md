@@ -4,7 +4,7 @@ Bienvenue sur le projet **TP3 - Liste de films**. Cette application Flutter perm
 
 ## 📱 Aperçu de l'application
 
-> **Note** : Ajoute tes captures d'écran dans le dossier `screenshots` à la racine pour qu'elles apparaissent ici.
+> **Note** : captures d'écran dans le dossier `screenshots` à la racine pour qu'elles apparaissent ici.
 
 | Liste des Films | Favoris | Détails |
 |:---:|:---:|:---:|
