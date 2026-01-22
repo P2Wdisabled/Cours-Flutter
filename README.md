@@ -6,7 +6,7 @@ Bienvenue sur le dépôt de mon application **Portfolio Card**. Ce projet a ét�
 
 Voici à quoi ressemble l'application.
 
-> **Note** : Ajoute tes captures d'écran dans le dossier `screenshots` à la racine du projet pour qu'elles s'affichent ici.
+> **Note** : captures d'écran dans le dossier `screenshots` à la racine du projet pour qu'elles s'affichent ici.
 
 | Accueil |
 |:-------:|
