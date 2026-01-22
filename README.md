@@ -1,16 +1,12 @@
-# tp2
+# ❓ Quiz Interactif - TP2
 
-A new Flutter project.
+Bienvenue sur le projet **TP2 - Quiz Flutter**. Cette application est un jeu de questions-réponses interactif développé pour apprendre la gestion d'état (`setState`) et la manipulation de listes en Flutter.
 
-## Getting Started
+## � Aperçu de l'application
 
-This project is a starting point for a Flutter application.
+> **Note** : Ajoute tes captures d'écran dans le dossier `screenshots` à la racine pour qu'elles apparaissent ici.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+| Question en cours | Résultat Final |
+|:---:|:---:|
+| <img src="screenshots/question.png" width="300" alt="Question"> | <img src="screenshots/result.png" width="300" alt="Résultat"> |
+| *Interface du quiz avec sélection* | *Score final et bouton replay* |
