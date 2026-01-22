@@ -1,16 +1,14 @@
-# tp1_antigravity
+# 📱 Portfolio Card App - TP1
 
-A new Flutter project.
+Bienvenue sur le dépôt de mon application **Portfolio Card**. Ce projet a été réalisé dans le cadre du TP1 du cours de Flutter. Il s'agit d'une carte de visite interactive et stylisée permettant de présenter mon profil, mes compétences et mes réseaux.
 
-## Getting Started
+## 🖼️ Galerie & Aperçu
 
-This project is a starting point for a Flutter application.
+Voici à quoi ressemble l'application.
 
-A few resources to get you started if this is your first Flutter project:
+> **Note** : Ajoute tes captures d'écran dans le dossier `screenshots` à la racine du projet pour qu'elles s'affichent ici.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+| Accueil |
+|:-------:|
+| <img src="screenshots/home.png" width="300" alt="Capture d'écran Accueil"> |
+| *Vue principale avec les cartes* |
