@@ -4,7 +4,7 @@ Bienvenue sur le projet **TP2 - Quiz Flutter**. Cette application est un jeu de 
 
 ## � Aperçu de l'application
 
-> **Note** : Ajoute tes captures d'écran dans le dossier `screenshots` à la racine pour qu'elles apparaissent ici.
+> **Note** : captures d'écran dans le dossier `screenshots` à la racine pour qu'elles apparaissent ici.
 
 | Question en cours | Résultat Final |
 |:---:|:---:|
